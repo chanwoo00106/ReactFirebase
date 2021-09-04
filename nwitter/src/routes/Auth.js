@@ -6,7 +6,8 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "fire
 const Auth = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [newAccount, setNewAccount] = useState(true)
+    const [newAccount, setNewAccount] = useState(true);
+    const [error, setError] = useState("");
 
     // 이런 코드가 있으면 알려달라고 노마드형
     const onChagne = (e) => {
@@ -31,22 +32,18 @@ const Auth = () => {
                 // ...
             })
             .catch((error) => {
-                console.log(error.code)
-                console.log(error.message)
+                setError(error.code)
             });
         } else {
             signInWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                // Signed in
-                const user = userCredential.user;
-                console.log(user)
-            })
             .catch((error) => {
                 console.log(error.code)
                 console.log(error.message)
             });
         }
     }
+
+    const toggleAccount = () => setNewAccount(prev => !prev);
 
     return (
         <div>
@@ -68,7 +65,9 @@ const Auth = () => {
                 onChange={onChagne}
                 />
                 <input type="submit" value={newAccount ? "Create Account" : "Log In"} />
+                {error}
             </form>
+            <span onClick={toggleAccount}>{newAccount ? "Log In" : "Create Account"}</span>
         </div>
     );
 };

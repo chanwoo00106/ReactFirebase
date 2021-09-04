@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { auth } from 'fbase';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, GithubAuthProvider, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
 
 const Auth = () => {
@@ -44,6 +44,23 @@ const Auth = () => {
     }
 
     const toggleAccount = () => setNewAccount(prev => !prev);
+    const onSocialClick = e => {
+        const {target: name} = e;
+        let provider
+        if (name === 'google') {
+            provider = new GoogleAuthProvider();
+        } else if (name === 'github') {
+            provider = new GithubAuthProvider();
+        }
+        signInWithPopup(auth, provider)
+        .then((result) => {
+            console.log(result)
+            console.log('성공')
+        }).catch((error) => {
+            const errorCode = error.code;
+            console.log(errorCode)
+        });
+    }
 
     return (
         <div>
@@ -67,7 +84,13 @@ const Auth = () => {
                 <input type="submit" value={newAccount ? "Create Account" : "Log In"} />
                 {error}
             </form>
-            <span onClick={toggleAccount}>{newAccount ? "Log In" : "Create Account"}</span>
+            <span onClick={toggleAccount}>
+                {newAccount ? "Log In" : "Create Account"}
+            </span>
+            <div>
+                <button onClick={onSocialClick} name="google">Continue with Google</button>
+                <button onClick={onSocialClick} name="github">Continue with Github</button>
+            </div>
         </div>
     );
 };

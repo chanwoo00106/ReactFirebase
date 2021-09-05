@@ -1,8 +1,21 @@
 import React, { useState } from 'react';
+import { collection, addDoc } from "firebase/firestore";
+import { db } from 'fbase';
 
 const Home = () => {
     const [nweet, setNweet] = useState('');
-    const onSubmit = e => e.preventDefault();
+    const onSubmit = async e => {
+        e.preventDefault();
+        try {
+            await addDoc(collection(db, 'nweets'), {
+                nweet,
+                createdAt: Date().slice(0, 15)
+            });
+            setNweet("");
+        } catch (e) {
+            console.error(e);
+        }
+    };
     const onChange = e => setNweet(e.target.value);
     return (
         <div>

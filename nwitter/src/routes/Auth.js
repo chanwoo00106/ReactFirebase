@@ -45,18 +45,17 @@ const Auth = () => {
 
     const toggleAccount = () => setNewAccount(prev => !prev);
     const onSocialClick = e => {
-        const {target: name} = e;
+        const {target: {name}} = e;
         let provider
+
         if (name === 'google') {
             provider = new GoogleAuthProvider();
         } else if (name === 'github') {
             provider = new GithubAuthProvider();
         }
+        
         signInWithPopup(auth, provider)
-        .then((result) => {
-            console.log(result)
-            console.log('성공')
-        }).catch((error) => {
+        .catch((error) => {
             const errorCode = error.code;
             console.log(errorCode)
         });

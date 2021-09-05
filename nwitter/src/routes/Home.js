@@ -1,32 +1,29 @@
 import React, { useEffect, useState } from 'react';
-import { collection, addDoc, getDocs } from "firebase/firestore";
-import { db } from 'fbase';
+import { collection, addDoc, onSnapshot } from "firebase/firestore";
+import { db, auth } from 'fbase';
 
 const Home = () => {
     const [nweet, setNweet] = useState('');
     const [nweets, setNweets] = useState([]);
-
-    
+    const ntRef = collection(db, "nweets");
 
     useEffect(() => {
-        const getNweets = async () => {
-            const dbNweets = await getDocs(collection(db, "nweets"));
-            dbNweets.forEach((doc) => {
-                const newObj = {
-                    ...doc.data(),
-                    id: doc.id
-                }
-                setNweets(prev => [newObj, ...prev]);
-            });
-        }
-        getNweets();
+        onSnapshot(ntRef, (snap) => {
+            const nweetArray = snap.docs.map((doc) => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+            setNweets(nweetArray)
+        })
     }, []);
+
     const onSubmit = async e => {
         e.preventDefault();
         try {
             await addDoc(collection(db, "nweets"), {
                 nweet,
-                createdAt: Date().slice(0, 15)
+                createdAt: Date().slice(0, 15),
+                creatorId: auth.currentUser.uid
             });
             setNweet("");
         } catch (e) {

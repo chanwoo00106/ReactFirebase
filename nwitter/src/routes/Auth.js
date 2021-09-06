@@ -48,10 +48,14 @@ const Auth = () => {
         const {target: {name}} = e;
         let provider
 
-        if (name === 'google') {
-            provider = new GoogleAuthProvider();
-        } else if (name === 'github') {
-            provider = new GithubAuthProvider();
+        try {
+            if (name === 'google') {
+                provider = new GoogleAuthProvider();
+            } else if (name === 'github') {
+                provider = new GithubAuthProvider();
+            }
+        } catch (e) {
+            console.error(e)
         }
         
         signInWithPopup(auth, provider)

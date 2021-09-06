@@ -1,10 +1,21 @@
-import React, { useState } from 'react';
-import { collection, addDoc } from "firebase/firestore";
+import React, { useEffect, useState } from 'react';
+import { collection, addDoc, onSnapshot } from "firebase/firestore";
 import { db, auth } from 'fbase';
 import Nweet from 'components/Nweet';
 
 const Home = () => {
     const [nweet, setNweet] = useState('');
+    const [nweets, setNweets] = useState([])
+
+    useEffect(() => {
+        onSnapshot(collection(db, "nweets"), (snap) => {
+            const nweetArray = snap.docs.map((doc) => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+            setNweets(nweetArray);
+        })
+    }, []);
     
 
     const onSubmit = async e => {
@@ -38,7 +49,9 @@ const Home = () => {
                     value="Nweet"
                 />
             </form>
-            <Nweet />
+            {nweets.map((nweet, i) => (
+                <Nweet key={i} nweet={nweet} id={nweet.id} />
+            ))}
         </div>
     );
 };

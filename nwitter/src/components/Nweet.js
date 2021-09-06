@@ -1,20 +1,11 @@
-import React, { useEffect, useState } from 'react'
-import { collection, onSnapshot, deleteDoc, doc } from "firebase/firestore";
+import React, { useState } from 'react'
+import { deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { db, auth } from 'fbase';
 
-const Nweet = () => {
+const Nweet = ({nweet, id}) => {
     const [editing, setEditing] = useState(false);
-    const [newNweet, setNewNweet] = useState("");nweets
-    const [nweets, setNweets] = useState([])
-    useEffect(() => {
-        onSnapshot(collection(db, "nweets"), (snap) => {
-            const nweetArray = snap.docs.map((doc) => ({
-                id: doc.id,
-                ...doc.data()
-            }));
-            setNweets(nweetArray);
-        })
-    }, []);
+    const [newNweet, setNewNweet] = useState(nweet.nweet);
+    
 
     const oneDeleteClick = async (id) => {
         const ok = window.confirm("Are you suer you want delete this nweet?")
@@ -22,29 +13,45 @@ const Nweet = () => {
         if (ok) await deleteDoc(doc(db, 'nweets', id))
     }
 
-    const toggleEditing = () => setEditing(!editing);
+    const toggleEditing = () => setEditing(prev => !prev);
+    const onChange = e => setNewNweet(e.target.value);
+    const onSubmit = async e => {
+        e.preventDefault();
+        setEditing(prev => !prev);
+        await updateDoc(doc(db, 'nweets', id), {
+            nweet: newNweet
+        });
+    }
 
     return (
         <>
-            {nweets.map((nweet, i) => (
-                <div key={i}>
-                    {editing ? <form><input value={newNweet}></input></form> :
-                        
+            {editing ? (
+                <>
+                    <form onSubmit={onSubmit}>
+                        <input
+                            type="text"
+                            placeholder="Edit your nweet"
+                            onChange={onChange}
+                            value={newNweet}
+                            required
+                        />
+                        <input type="submit" value="Update Nweet" />
+                    </form>
+                    <button onClick={toggleEditing}>Cancel</button>
+                </>
+            ) : (
+                <>
+                    <h4>{nweet.nweet}</h4>
+                    {
+                        auth.currentUser.uid === nweet.creatorId &&
                         <>
-                            <h4>{nweet.nweet}</h4>
-                            {
-                                auth.currentUser.uid === nweet.creatorId &&
-                                <>
-                                    <div>{nweet.id}</div>
-                                    <button onClick={() => oneDeleteClick(nweet.id)}>Delete Nweet</button>
-                                    <button onClick={toggleEditing}>Edit Nweet</button>
-                                </>
-                                
-                            }
+                            <button onClick={() => oneDeleteClick(nweet.id)}>Delete Nweet</button>
+                            <button onClick={toggleEditing}>Edit Nweet</button>
                         </>
+                        
                     }
-                </div>
-            ))}
+                </>
+            )}
         </>
     )
 }

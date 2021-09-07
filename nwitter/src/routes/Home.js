@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import firebase from 'firebase/compat/app';
+import 'firebase/firestore';
 import {v4 as uuidv4} from 'uuid';
 import { collection, addDoc, onSnapshot } from "firebase/firestore";
-import { db, auth, storage } from 'fbase';
+import { db, auth } from 'fbase';
 import Nweet from 'components/Nweet';
 
 const Home = () => {
@@ -36,7 +38,7 @@ const Home = () => {
     const onSubmit = async e => {
         e.preventDefault();
         setNweet("");
-        const fileRef = storage(auth.currentUser, uuidv4())
+        const fileRef = firebase.storage().ref().child(`${auth.currentUser}/${uuidv4()}`)
         const response = await fileRef.putString(attachment, "data_url");
         console.log(response) 
         try {

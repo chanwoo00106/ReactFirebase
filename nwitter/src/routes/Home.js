@@ -16,6 +16,18 @@ const Home = () => {
             setNweets(nweetArray);
         })
     }, []);
+
+    const onFileChange = e => {
+        const {
+            target: {files}
+        } = e;
+        const theFile = files[0];
+        const reader = new FileReader();
+        reader.onloadend = finishedEvent => {
+            console.log(finishedEvent);
+        }
+        reader.readAsDataURL(theFile);
+    }
     
 
     const onSubmit = async e => {
@@ -48,6 +60,7 @@ const Home = () => {
                     type="submit"
                     value="Nweet"
                 />
+                <input type="file" onChange={onFileChange} accept="image/*" />
             </form>
             {nweets.map((nweet, i) => (
                 <Nweet key={i} nweet={nweet} id={nweet.id} />

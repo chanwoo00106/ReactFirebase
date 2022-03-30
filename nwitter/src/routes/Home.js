@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import firebase from 'firebase/compat/app';
 import 'firebase/firestore';
 import {v4 as uuidv4} from 'uuid';
-import { collection, addDoc, onSnapshot } from "firebase/firestore";
+import { collection, onSnapshot } from "firebase/firestore";
 import { db, auth } from 'fbase';
 import Nweet from 'components/Nweet';
 
@@ -37,19 +37,19 @@ const Home = () => {
 
     const onSubmit = async e => {
         e.preventDefault();
-        setNweet("");
         const fileRef = firebase.storage().ref().child(`${auth.currentUser}/${uuidv4()}`)
         const response = await fileRef.putString(attachment, "data_url");
-        console.log(response) 
+
         try {
             // await addDoc(collection(db, "nweets"), {
-            //     nweet,
-            //     createdAt: Date().slice(0, 15),
-            //     creatorId: auth.currentUser.uid
-            // });
-        } catch (e) {
-            console.error(e);
-        }
+                //     nweet,
+                //     createdAt: Date().slice(0, 15),
+                //     creatorId: auth.currentUser.uid
+                // });
+            } catch (e) {
+                console.error(e);
+            }
+        setNweet("");
     };
 
     const onChange = e => setNweet(e.target.value);
